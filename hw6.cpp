@@ -124,9 +124,76 @@ void showExpr(list<ExpressionPart*> expressions) {
     }
     cout << endl;
 }
-
-void evalPostfixExpr(list<ExpressionPart*> expressions) {
+/*void evalPostfixExpr(list<ExpressionPart*> expressions) {
     list<ExpressionPart*> exprStack;
+    for (auto ep : expressions) {
+        switch (ep->getEType()) {
+            case SEMI:
+                if (exprStack.size() == 1) {
+                    ExpressionPart* res = exprStack.front();
+                    if (res->getEType() == NUMBER) {
+                        cout << "Result is " << ((ExpressionNumber*) res)->getNumber() << endl;
+                    }
+                    else {
+                        throw INFIX_FORMAT_ERROR;
+                    }
+                }
+                else {
+                    throw INFIX_FORMAT_ERROR;
+                }
+                break;
+            case NUMBER:
+                exprStack.push_front(ep);
+                break;
+            case LPAREN:
+            case RPAREN:
+                throw INFIX_FORMAT_ERROR;
+                break;
+            case ADD:
+            case MINUS:
+            case TIMES:
+            case DIVIDE:
+            case POWER:
+                ExpressionPart *rgt = exprStack.front();
+                exprStack.pop_front();
+                ExpressionPart *lft = exprStack.front();
+                exprStack.pop_front();
+                if ((lft->getEType() != NUMBER) && (rgt->getEType() != NUMBER)) {
+                    throw INFIX_FORMAT_ERROR;
+                }
+                double res = ((ExpressionNumber*)lft)->getNumber();
+                switch (ep->getEType()) {
+                    case ADD:
+                        res += ((ExpressionNumber *) rgt)->getNumber();
+                        break;
+                    case MINUS:
+                        res -= ((ExpressionNumber *) rgt)->getNumber();
+                        break;
+                    case TIMES:
+                        res *= ((ExpressionNumber *) rgt)->getNumber();
+                        break;
+                    case DIVIDE:
+                        res /= ((ExpressionNumber *) rgt)->getNumber();
+                        break;
+                    case POWER:
+                        res = pow(res, ((ExpressionNumber *) rgt)->getNumber());
+                        break;
+                }
+                exprStack.push_front(new ExpressionNumber(res));
+                break;
+        }
+    }
+}
+*/
+
+void evalPrefixExpr(list<ExpressionPart*> expressions) {
+    list<ExpressionPart*> exprStack;
+    for (auto num : expressions){
+        if (num->getEType() == NUMBER){
+            exprStack.push_front(num);
+        }
+    }
+
     for (auto ep : expressions) {
         switch (ep->getEType()) {
             case SEMI:
@@ -190,7 +257,8 @@ int main() {
     try {
         list<ExpressionPart *> expressions = readExpr();
         showExpr(expressions);
-        evalPostfixExpr(expressions);
+        //evalPostfixExpr(expressions);
+        evalPrefixExpr(expressions);
     }
     catch (string s) {
         cerr << s << endl;
