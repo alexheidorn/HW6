@@ -113,7 +113,12 @@ list<ExpressionPart*> readExpr() {
                 break;
             }
         }
-        expressions.push_back(epart);
+        if (epart->getEType() == SEMI){
+            expressions.push_back(epart);
+        }
+        else{
+            expressions.push_front(epart);
+        }
     } while (epart->getEType() != SEMI);
     return expressions;
 }
@@ -188,8 +193,7 @@ void showExpr(list<ExpressionPart*> expressions) {
 
 void evalPrefixExpr(list<ExpressionPart*> expressions) {
     list<ExpressionPart*> exprStack;
-    
-    for (auto ep = expressions.rbegin(); ep != expressions.rend(); ep++) {
+    for (auto ep : expressions) {
         switch (ep->getEType()) {
             case SEMI:
                 if (exprStack.size() == 1) {
@@ -206,7 +210,7 @@ void evalPrefixExpr(list<ExpressionPart*> expressions) {
                 }
                 break;
             case NUMBER:
-                exprStack.push_back(ep);
+                exprStack.push_front(ep);
                 break;
             case LPAREN:
             case RPAREN:
@@ -217,11 +221,11 @@ void evalPrefixExpr(list<ExpressionPart*> expressions) {
             case TIMES:
             case DIVIDE:
             case POWER:
-                ExpressionPart *rgt = exprStack.front();
-                exprStack.pop_back();
                 ExpressionPart *lft = exprStack.front();
-                exprStack.pop_back();
-                if ((lft->getEType() != NUMBER) && (rgt->getEType() != NUMBER)) {
+                exprStack.pop_front();
+                ExpressionPart *rgt = exprStack.front();
+                exprStack.pop_front();
+                if ((lft->getEType() != NUMBER) || (rgt->getEType() != NUMBER)) {
                     throw INFIX_FORMAT_ERROR;
                 }
                 double res = ((ExpressionNumber*)lft)->getNumber();
