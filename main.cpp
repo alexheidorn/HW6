@@ -1,5 +1,6 @@
 /*
 * Alex Heidorn
+* Teammates: Sam Draeger, Aidan Carlson, Anna Wolf
 * Created: 10-10-23
 * CS2 HW6
 *  
@@ -159,7 +160,7 @@ void evalPostfixExpr(list<ExpressionPart*> expressions) {
                 exprStack.pop_front();
                 ExpressionPart *lft = exprStack.front();
                 exprStack.pop_front();
-                if ((lft->getEType() != NUMBER) && (rgt->getEType() != NUMBER)) {
+                if ((lft->getEType() != NUMBER) || (rgt->getEType() != NUMBER)) {
                     throw INFIX_FORMAT_ERROR;
                 }
                 double res = ((ExpressionNumber*)lft)->getNumber();
